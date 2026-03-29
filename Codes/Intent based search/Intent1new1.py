@@ -45,30 +45,43 @@ SIM_HIGH_BAND = 0.93
 # Global boost multiplier (set from sidebar in main())
 BOOST_MULT = 1.0
 
+def get_placeholder_image(category):
+    category = str(category).lower()
+
+    if "shoe" in category or "footwear" in category:
+        return "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300"
+    elif "electronics" in category:
+        return "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=300"
+    elif "clothing" in category:
+        return "https://images.unsplash.com/photo-1521335629791-ce4aec67dd47?w=300"
+    else:
+        return "https://via.placeholder.com/300x200.png?text=Product"
+
 # ------------------ STYLING ------------------
 def local_css():
     st.markdown("""
     <style>
         .product-card {
-            background: white;
+            background: var(--background-color);
             border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 1rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(128,128,128,0.2);
             transition: all 0.3s ease;
+            backdrop-filter: blur(6px);
         }
         .product-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.2);
         }
         .product-title {
             font-size: 1.2rem;
             font-weight: 600;
-            color: #1a237e;
+            color: var(--text-color);
             margin-bottom: 0.5rem;
         }
         .product-category {
-            color: #666;
+            color: var(--text-color);
             font-size: 0.9rem;
             margin-bottom: 0.5rem;
             text-transform: uppercase;
@@ -687,9 +700,9 @@ def display_product_card(col, result, query, index):
                     try:
                         st.image(img_url, width=200)
                     except:
-                        st.image("https://via.placeholder.com/200?text=No+Image", width=200)
+                        st.image(get_placeholder_image(result.get(CATEGORY_COL,""), width=200)
                 else:
-                    st.image("https://via.placeholder.com/200?text=No+Image", width=200)
+                    st.image(get_placeholder_image(result.get(CATEGORY_COl,"")), width=200)
             
             # Relevance indicator
             score = result.get('score', 0)
