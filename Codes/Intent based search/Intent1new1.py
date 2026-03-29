@@ -702,7 +702,7 @@ def display_product_card(col, result, query, index):
                     except:
                         st.image(get_placeholder_image(result.get(CATEGORY_COL,"")), width=200)
                 else:
-                    st.image(get_placeholder_image(result.get(CATEGORY_COl,"")), width=200)
+                    st.image(get_placeholder_image(result.get(CATEGORY_COL,"")), width=200)
             
             # Relevance indicator
             score = result.get('score', 0)
