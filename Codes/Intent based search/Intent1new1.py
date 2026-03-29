@@ -687,7 +687,9 @@ def display_product_card(col, result, query, index):
                     try:
                         st.image(img_url, width=200)
                     except:
-                        st.warning("Image unavailable")
+                        st.image("https://via.placeholder.com/200?text=No+Image", width=200)
+                else:
+                    st.image("https://via.placeholder.com/200?text=No+Image", width=200)
             
             # Relevance indicator
             score = result.get('score', 0)
