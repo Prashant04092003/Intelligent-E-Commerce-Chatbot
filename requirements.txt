@@ -1,0 +1,28 @@
+# Core Web Framework
+streamlit>=1.28.0
+
+# Data Processing & Analysis
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Machine Learning & NLP
+sentence-transformers>=2.2.0  # For text embeddings (uses MiniLM model)
+scikit-learn>=1.3.0  # For NearestNeighbors, cosine similarity
+
+# Optional: FAISS for faster similarity search
+# Uncomment if you want to use FAISS (faster but requires additional setup)
+# faiss-cpu>=1.7.4  # For CPU-only systems
+# faiss-gpu>=1.7.4  # For systems with CUDA-capable GPUs
+
+# Visualization
+plotly>=5.17.0  # For interactive charts (px, go)
+
+# HTTP Requests (for Ollama API)
+requests>=2.31.0
+
+# Python Standard Library (built-in, no installation needed)
+# - os: File path operations
+# - json: JSON parsing
+# - ast: Python literal evaluation
+# - re: Regular expressions
+# - collections: Counter for frequency analysis
