@@ -62,7 +62,7 @@ def local_css():
     st.markdown("""
     <style>
         .product-card {
-            background: var(--background-color);
+            background-color: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 1rem;
@@ -77,11 +77,11 @@ def local_css():
         .product-title {
             font-size: 1.2rem;
             font-weight: 600;
-            color: var(--text-color);
+            color: #ffffff;
             margin-bottom: 0.5rem;
         }
         .product-category {
-            color: var(--text-color);
+            color: #bbbbbb;
             font-size: 0.9rem;
             margin-bottom: 0.5rem;
             text-transform: uppercase;
@@ -99,6 +99,7 @@ def local_css():
             margin-top: 0.5rem;
             padding-top: 0.5rem;
             border-top: 1px solid #eee;
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
         .product-score {
             color: #1976d2;
