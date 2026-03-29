@@ -582,16 +582,33 @@ Keep each point brief but insightful.""", "stream": False},
     return generate_local_ai_analysis(query, product_info, score or 0.5, price_numeric, rating_numeric, category or 'Unknown')
 
 def extract_first_image_url(image_str):
-    """Extract first valid image URL from JSON string"""
     try:
-        if pd.isna(image_str):
+        if pd.isna(image_str) or not image_str:
             return None
-        # Parse JSON string to list
-        images = json.loads(image_str)
+
+        # Step 1: try JSON
+        try:
+            images = json.loads(image_str)
+        except:
+            # Step 2: try python literal
+            try:
+                images = ast.literal_eval(image_str)
+            except:
+                # Step 3: fallback → treat as plain string
+                return None
+
         if isinstance(images, list) and len(images) > 0:
-            return images[0]  # Return first image URL
+            url = str(images[0])
+
+            # Fix http → https
+            if url.startswith("http://"):
+                url = url.replace("http://", "https://")
+
+            return url
+
         return None
-    except:
+
+    except Exception:
         return None
 
 def format_specifications(specs_str):
