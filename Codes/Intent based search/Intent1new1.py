@@ -10,7 +10,7 @@ import json
 import requests
 import ast
 import re
-#from sentence_transformers import SentenceTransformer
+from sentence_transformers import SentenceTransformer
 from sklearn.neighbors import NearestNeighbors
 import plotly.express as px
 import plotly.graph_objects as go
