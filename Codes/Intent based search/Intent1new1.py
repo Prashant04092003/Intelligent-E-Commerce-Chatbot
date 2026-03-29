@@ -116,10 +116,15 @@ def local_css():
         .stTabs [data-baseweb="tab"] {
             height: 50px;
             white-space: pre-wrap;
-            background-color: #f8f9fa;
+            background-color: rgba(255, 255, 255, 0.08);
             border-radius: 4px;
             gap: 4px;
             padding: 8px 16px;
+        }
+        .stTabs [aria-selected = "true"] {
+        background-color: rgba(255,255,255,0.15);
+        color: #ffffff;
+        border-bottom: 2px solid #ff4b4b
         }
     </style>
     """, unsafe_allow_html=True)
