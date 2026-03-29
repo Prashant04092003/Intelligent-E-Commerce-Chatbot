@@ -700,7 +700,7 @@ def display_product_card(col, result, query, index):
                     try:
                         st.image(img_url, width=200)
                     except:
-                        st.image(get_placeholder_image(result.get(CATEGORY_COL,""), width=200)
+                        st.image(get_placeholder_image(result.get(CATEGORY_COL,"")), width=200)
                 else:
                     st.image(get_placeholder_image(result.get(CATEGORY_COl,"")), width=200)
             
