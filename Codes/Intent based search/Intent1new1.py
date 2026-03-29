@@ -10,7 +10,7 @@ import json
 import requests
 import ast
 import re
-from sentence_transformers import SentenceTransformer
+#from sentence_transformers import SentenceTransformer
 from sklearn.neighbors import NearestNeighbors
 import plotly.express as px
 import plotly.graph_objects as go
@@ -23,8 +23,8 @@ except ImportError:
     FAISS_AVAILABLE = False
 
 # ------------------ CONFIG ------------------
-DATA_PATH = r"C:\Users\Himani Grover\Downloads\cleaned_flipkart_data.csv"
-EMBED_PATH = r"C:\Users\Himani Grover\Downloads\flipkart_embeddings.npy"
+DATA_PATH = "Codes/Intent based search/cleaned_flipkart_data.csv"
+EMBED_PATH = "Codes/Intent based search/flipkart_embeddings.npy"
 MODEL_NAME = "all-MiniLM-L6-v2"
 TOP_K = 10
 
