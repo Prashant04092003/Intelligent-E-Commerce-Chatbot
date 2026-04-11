@@ -31,7 +31,7 @@ TOP_K = 10
 PRODUCT_NAME_COL = "product_name"
 CATEGORY_COL = "main_category"
 PRICE_COL = "discounted_price"
-IMAGE_COL = "image"
+IMAGE_COL = "image_base64"
 DESC_COL = "description"
 RATING_COL = "overall_rating"
 CATEGORY_TREE_COL = "product_category_tree"
@@ -466,11 +466,11 @@ def generate_local_ai_analysis(query, product_info, score, price, rating, catego
         relevance = "Somewhat Relevant (4-5/10)"
         relevance_desc = "This product has partial relevance to your search."
     
-    analysis += f"**🎯 Relevance Score:** {relevance}\n"
+    analysis += f"** Relevance Score:** {relevance}\n"
     analysis += f"*{relevance_desc}*\n\n"
     
     # 2. Key Benefits
-    analysis += "**✅ Key Benefits:**\n"
+    analysis += "** Key Benefits:**\n"
     benefits = []
     
     # Match keywords
@@ -509,7 +509,7 @@ def generate_local_ai_analysis(query, product_info, score, price, rating, catego
     analysis += "\n"
     
     # 3. Considerations
-    analysis += "**⚠️ Things to Consider:**\n"
+    analysis += "** Things to Consider:**\n"
     considerations = []
     
     if score < 0.5:
@@ -700,8 +700,8 @@ def display_product_card(col, result, query, index):
     with col:
         with st.container():
             # Product Image - handle JSON array of URLs
-            if IMAGE_COL in result:
-                img_url = extract_first_image_url(result[IMAGE_COL])
+            if IMAGE_COL in result and result[IMAGE_COL]:
+                st.image(result[IMAGE_COL], width = 200)
                 if img_url:
                     try:
                         st.image(img_url, width=200)
@@ -741,16 +741,16 @@ def display_product_card(col, result, query, index):
             
             # Show why this product matched
             if 'matched_keywords' in result and result['matched_keywords']:
-                with st.expander("🔍 Why this matches your search", expanded=False):
+                with st.expander(" Why this matches your search", expanded=False):
                     keywords_display = ', '.join(result['matched_keywords'])
                     st.caption(f"**Matched keywords:** {keywords_display}")
                     if 'category_match' in result and result['category_match'] > 0:
-                        st.caption("✅ Category relevance detected")
+                        st.caption(" Category relevance detected")
                     if 'keyword_match' in result:
                         st.caption(f"**Keyword match boost:** +{result['keyword_match']*100:.1f}%")
 
             # Product Description & AI Analysis in tabs
-            tab1, tab2 = st.tabs(["📝 Details", "🤖 AI Analysis"])
+            tab1, tab2 = st.tabs([" Details", " AI Analysis"])
             
             with tab1:
                 if DESC_COL in result and result[DESC_COL] and str(result[DESC_COL]).strip():
@@ -761,7 +761,7 @@ def display_product_card(col, result, query, index):
                 
                 specs = result.get('product_specifications') or result.get('product_specification')
                 if specs and str(specs).strip():
-                    with st.expander("📋 Product Specifications", expanded=False):
+                    with st.expander(" Product Specifications", expanded=False):
                         spec_df = format_specifications(specs)
                         if spec_df is not None and not spec_df.empty:
                             # show compact table
@@ -808,7 +808,7 @@ def display_product_card(col, result, query, index):
 
                     # Show additional context
                     st.markdown("---")
-                    with st.expander("📊 Technical Details", expanded=False):
+                    with st.expander(" Technical Details", expanded=False):
                         st.write(f"**Match Score Breakdown:**")
                         st.write(f"- Base Semantic Score: {result.get('base_score', product_score):.3f}")
                         if 'keyword_match' in result:
@@ -892,7 +892,7 @@ def generate_shopping_insights(results, query):
                 fig_price = px.violin(
                     results_df,
         y=PRICE_COL,
-                    title="📊 Price Distribution",
+                    title=" Price Distribution",
                     labels={PRICE_COL: "Price (₹)"},
                     box=True,
                     points="all"
@@ -933,7 +933,7 @@ def generate_shopping_insights(results, query):
                 x='Category',
                 y='Count',
                 color='Avg_Score',
-                title="📦 Category Distribution (Colored by Avg Match Score)",
+                title=" Category Distribution (Colored by Avg Match Score)",
                 labels={'Count': 'Number of Products', 'Avg_Score': 'Avg Match Score'},
                 color_continuous_scale='Blues'
             )
@@ -976,7 +976,7 @@ def generate_shopping_insights(results, query):
                     y=RATING_COL,
                     size='score',
                     color='score',
-                    title="💰 Price vs Rating (Size = Match Score)",
+                    title=" Price vs Rating (Size = Match Score)",
                     labels={
                         PRICE_COL: 'Price (₹)',
                         RATING_COL: 'Rating',
@@ -993,7 +993,7 @@ def generate_shopping_insights(results, query):
             fig_scores = px.histogram(
                 results_df,
                 x='score',
-                title="🎯 Match Score Distribution",
+                title=" Match Score Distribution",
                 labels={'score': 'Match Score', 'count': 'Number of Products'},
                 nbins=15,
                 color_discrete_sequence=['#1976d2']
@@ -1041,7 +1041,7 @@ def generate_shopping_insights(results, query):
                         x='value_score',
                         y='display_name',
                         orientation='h',
-                        title="🏆 Top Value-for-Money Products",
+                        title=" Top Value-for-Money Products",
                         labels={'value_score': 'Value Score', 'display_name': 'Product'},
                         color='value_score',
                         color_continuous_scale='Greens'
@@ -1081,7 +1081,7 @@ def generate_shopping_insights(results, query):
                     pd.DataFrame(range_counts),
                     values='Count',
                     names='Range',
-                    title="💵 Price Range Distribution",
+                    title=" Price Range Distribution",
                     color_discrete_sequence=px.colors.sequential.Blues_r
                 )
                 fig_ranges.update_layout(height=400)
@@ -1188,7 +1188,7 @@ def main():
     # Header
     col1, col2 = st.columns([2,1])
     with col1:
-        st.title("🛍️ Smart Product Finder")
+        st.title(" Smart Product Finder")
         st.markdown("_Tell me what you're looking for and I'll find the best matches_")
     
     # Load data and models
@@ -1207,7 +1207,7 @@ def main():
             model = load_model()
             index = build_index(embeddings)
         
-        st.success(f"✅ Loaded {len(df)} products with {embeddings.shape[1]}-dimensional embeddings")
+        st.success(f" Loaded {len(df)} products with {embeddings.shape[1]}-dimensional embeddings")
         
     except FileNotFoundError as e:
         st.error(f"File not found: {str(e)}")
@@ -1217,7 +1217,7 @@ def main():
         st.stop()
     
     # Sidebar controls
-    st.sidebar.header("🔍 Search Settings")
+    st.sidebar.header(" Search Settings")
     top_k = st.sidebar.slider("Number of results", 4, 20, 8)
     
     # Categories for filtering
@@ -1240,7 +1240,7 @@ def main():
 
     # Main search interface
     query = st.text_input(
-        "🔍 Describe what you're looking for...",
+        " Describe what you're looking for...",
         value="I need comfortable running shoes for daily jogging",
         help="Example: 'I'm going to a wedding and need formal shoes' or 'Looking for a gaming laptop'"
     )
@@ -1288,13 +1288,13 @@ def main():
         help="Automatically filter out products from unrelated categories based on your query"
     )
 
-    if st.button("🔍 Search", type="primary"):
+    if st.button(" Search", type="primary"):
         if not query or not query.strip():
             st.warning("Please enter a search query")
             return
             
         # Show query analysis
-        with st.expander("🔎 Query Analysis", expanded=False):
+        with st.expander(" Query Analysis", expanded=False):
             keywords = extract_keywords(query)
             expected_cats = detect_intent_category(query)
             col1, col2 = st.columns(2)
@@ -1360,7 +1360,7 @@ def main():
             results = filtered_results[:top_k]  # Limit to requested number
             
             # Create tabs for different views
-            tab1, tab2, tab3 = st.tabs(["📱 Products", "📊 Insights", "💡 Summary"])
+            tab1, tab2, tab3 = st.tabs([" Products", " Insights", " Summary"])
             
             with tab1:
                 if not results:
@@ -1377,14 +1377,14 @@ def main():
                         display_product_card(col2, results[i+1], query, index)
             
             with tab2:
-                st.subheader("📊 Comprehensive Shopping Insights")
+                st.subheader(" Comprehensive Shopping Insights")
                 
                 # Generate insights
                 insights, figures = generate_shopping_insights(results, query)
                 
                 # Display key statistics in metrics
                 if insights:
-                    st.markdown("### 📈 Key Statistics")
+                    st.markdown("###  Key Statistics")
                     stats_cols = st.columns(4)
                     
                     with stats_cols[0]:
@@ -1427,35 +1427,35 @@ def main():
                 
                 # Quick Insights Summary
                 if insights:
-                    st.markdown("### 💡 Quick Insights")
+                    st.markdown("###  Quick Insights")
                     insight_cols = st.columns(3)
                     
                     with insight_cols[0]:
                         if 'best_match_score' in insights:
-                            st.info(f"🎯 **Best Match:** {insights['best_match_score']:.3f}")
+                            st.info(f" **Best Match:** {insights['best_match_score']:.3f}")
                         if 'affordability' in insights:
                             gap = insights['affordability']['price_gap']
                             if gap > 0:
-                                st.info(f"💰 **Price Gap:** ₹{gap:,.0f}")
+                                st.info(f" **Price Gap:** ₹{gap:,.0f}")
                     
                     with insight_cols[1]:
                         if 'category_diversity' in insights:
                             div_info = insights['category_diversity']
                             if div_info['is_diverse']:
-                                st.warning(f"📦 **Multiple Categories:** {div_info['unique_categories']} categories found")
+                                st.warning(f" **Multiple Categories:** {div_info['unique_categories']} categories found")
                             else:
-                                st.success(f"📦 **Focused:** All products in same category")
+                                st.success(f" **Focused:** All products in same category")
                     
                     with insight_cols[2]:
                         if 'top_value_products' in insights and len(insights['top_value_products']) > 0:
                             best_value = insights['top_value_products'][0]
-                            st.success(f"🏆 **Best Value:** {best_value['name'][:30]}... (Score: {best_value['value_score']:.3f})")
+                            st.success(f" **Best Value:** {best_value['name'][:30]}... (Score: {best_value['value_score']:.3f})")
                 
                 st.markdown("---")
                 
                 # Display all visualizations
                 if figures:
-                    st.markdown("### 📉 Visualizations")
+                    st.markdown("###  Visualizations")
                     
                     # Create tabs for different visualization groups
                     viz_tabs = st.tabs(["Distribution", "Value Analysis", "Relationships", "Top Products"])
@@ -1481,7 +1481,7 @@ def main():
                         
                         # Display top value products
                         if 'top_value_products' in insights:
-                            st.markdown("#### 🏆 Best Value-for-Money Products")
+                            st.markdown("####  Best Value-for-Money Products")
                             for idx, product in enumerate(insights['top_value_products'], 1):
                                 with st.expander(f"{idx}. {product['name'][:60]}..."):
                                     col1, col2, col3 = st.columns(3)
@@ -1503,7 +1503,7 @@ def main():
                     
                     with viz_tabs[3]:  # Top Products tab
                         if 'top_matches' in insights:
-                            st.markdown("#### 🎯 Top Matches by Score")
+                            st.markdown("####  Top Matches by Score")
                             top_df = pd.DataFrame(insights['top_matches'])
                             st.dataframe(
                                 top_df[['name', 'score', 'category', 'price']],
@@ -1519,7 +1519,7 @@ def main():
                         
                         # Price statistics details
                         if 'price_stats' in insights:
-                            st.markdown("#### 💰 Detailed Price Statistics")
+                            st.markdown("####  Detailed Price Statistics")
                             ps = insights['price_stats']
                             col1, col2 = st.columns(2)
                             with col1:
@@ -1531,7 +1531,7 @@ def main():
                         
                         # Price range breakdown
                         if 'price_ranges' in insights:
-                            st.markdown("#### 💵 Price Range Breakdown")
+                            st.markdown("####  Price Range Breakdown")
                             for range_info in insights['price_ranges']:
                                 st.write(f"**{range_info['Range']}**: {range_info['Count']} products")
                 else:
@@ -1540,7 +1540,7 @@ def main():
                 st.markdown("---")
                 
                 # Similar products recommendation
-                st.subheader("🔍 You might also like")
+                st.subheader(" You might also like")
                 similar_cats = list(set(r.get(CATEGORY_COL, 'Unknown') for r in results))
                 if similar_cats:
                     # Get indices of current results
@@ -1593,7 +1593,7 @@ def main():
                         median_price = np.median(prices)
                         mean_price = np.mean(prices)
                         st.info(f"""
-                        💰 **Budget Guide**:
+                         **Budget Guide**:
                         - Median Price: ₹{median_price:,.2f}
                         - Average Price: ₹{mean_price:,.2f}
                         - Price Range: ₹{min(prices):,.2f} - ₹{max(prices):,.2f}
@@ -1605,10 +1605,10 @@ def main():
                     
                     # Query refinement suggestions
                     st.markdown("---")
-                    st.subheader("💡 Search Tips")
+                    st.subheader(" Search Tips")
                     keywords = extract_keywords(query)
                     if len(keywords) < 3:
-                        st.info("💬 **Tip:** Add more specific keywords (e.g., brand, size, color) for better results")
+                        st.info(" **Tip:** Add more specific keywords (e.g., brand, size, color) for better results")
                     
                     # Show category distribution suggestion
                     result_categories = [r.get(CATEGORY_COL, 'Unknown') for r in results]
@@ -1616,15 +1616,15 @@ def main():
                         unique_cats = set(result_categories)
                         if len(unique_cats) > 3:
                             top_cat = max(set(result_categories), key=result_categories.count)
-                            st.info(f"💬 **Tip:** Most results are in '{top_cat}'. Try filtering by category for more focused results.")
+                            st.info(f" **Tip:** Most results are in '{top_cat}'. Try filtering by category for more focused results.")
                     
                     # Score distribution tip
                     if results:
                         avg_score = np.mean([r.get('score', 0) for r in results])
                         if avg_score < 0.5:
-                            st.warning("⚠️ **Note:** Average match score is low. Try being more specific or using different keywords.")
+                            st.warning(" **Note:** Average match score is low. Try being more specific or using different keywords.")
                         elif avg_score >= 0.7:
-                            st.success("✅ **Great!** Your query matches well with available products.")
+                            st.success(" **Great!** Your query matches well with available products.")
 
     # Footer
     st.markdown("---")
